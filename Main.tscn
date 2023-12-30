@@ -1,0 +1,88 @@
+[gd_scene load_steps=8 format=3 uid="uid://bkkciq1kt5aco"]
+
+[ext_resource type="Script" path="res://Ball.gd" id="1_1tae5"]
+[ext_resource type="Texture2D" uid="uid://bdnbrqjnyi8oh" path="res://icon.svg" id="2_67n3d"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="3_4le1s"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_5ypob"]
+[ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_uk086"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dqnmd"]
+radius = 100.0
+
+[sub_resource type="Resource" id="Resource_xhcx7"]
+script = ExtResource("4_5ypob")
+duration = 1.0
+transition = 0
+ease = 2
+
+[node name="Node2D" type="Node2D"]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
+polygon = PackedVector2Array(-54, 564, 171, 698, 558, 764, 958, 740, 1292, 733, 1539, 753, 1813, 724, 2113, 651, 2346, 732, 2503, 1022, 2802, 1915, 3063, 2314, 3491, 2514, 3900, 2566, 4646, 2476, 5482, 2238, 5895, 1972, 5815, 2799, 6427, 2732, 7554, 2827, 8437, 2732, 9411, 2884, 10039, 2780, 10366, 2528, 10452, 2143, 11084, 2100, 10998, 3720, 6969, 3516, 4052, 3326, 845, 2675, -48, 1120)
+
+[node name="Polygon2D" type="Polygon2D" parent="StaticBody2D"]
+polygon = PackedVector2Array(-54, 564, 171, 698, 558, 764, 958, 740, 1292, 733, 1539, 753, 1813, 724, 2113, 651, 2346, 732, 2503, 1022, 2802, 1915, 3063, 2314, 3491, 2514, 3900, 2566, 4646, 2476, 5482, 2238, 5895, 1972, 5815, 2799, 6427, 2732, 7554, 2827, 8437, 2732, 9411, 2884, 10039, 2780, 10366, 2528, 10452, 2143, 11084, 2100, 10998, 3720, 6969, 3516, 4052, 3326, 845, 2675, -48, 1120)
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+position = Vector2(17, 135)
+metadata/_edit_group_ = true
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="RigidBody2D"]
+remote_path = NodePath("../../Ball")
+update_rotation = false
+update_scale = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+shape = SubResource("CircleShape2D_dqnmd")
+
+[node name="Icon" type="Sprite2D" parent="RigidBody2D/CollisionShape2D"]
+texture = ExtResource("2_67n3d")
+
+[node name="Polygon2D" type="Polygon2D" parent="RigidBody2D"]
+polygon = PackedVector2Array(49, -87, 86, -51, 100, 1, 87, 51, 53, 86, 1, 101, -50, 87, -86, 52, -100, 1, -87, -49, -52, -84, 0, -100)
+
+[node name="Ball" type="Node2D" parent="." node_paths=PackedStringArray("body")]
+position = Vector2(17, 135)
+script = ExtResource("1_1tae5")
+body = NodePath("../RigidBody2D")
+
+[node name="Line2D" type="Line2D" parent="Ball"]
+points = PackedVector2Array(1.45519e-11, 1.45519e-11, 50, 1.45519e-11)
+
+[node name="PhantomCamera2D" type="Node2D" parent="Ball"]
+script = ExtResource("3_4le1s")
+priority_override = false
+priority = 0
+zoom = Vector2(1, 1)
+follow_mode = 2
+follow_target = NodePath("../Node2D/CameraTarget")
+follow_parameters/target_offset = Vector2(0, 0)
+follow_parameters/damping = true
+follow_parameters/damping_value = 2.0
+frame_preview = true
+pixel_perfect = false
+limit/draw_limits = true
+limit/left = -10000000
+limit/top = -10000000
+limit/right = 10000000
+limit/bottom = 10000000
+limit/limit_node_target = NodePath("")
+limit/smoothed = false
+tween_parameters = SubResource("Resource_xhcx7")
+tween_on_load = true
+inactive_update_mode = 0
+
+[node name="Node2D" type="Node2D" parent="Ball"]
+scale = Vector2(1, 0.5)
+
+[node name="CameraTarget" type="Marker2D" parent="Ball/Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(17, 135)
+position_smoothing_speed = 10.0
+editor_draw_limits = true
+
+[node name="PhantomCameraHost" type="Node" parent="Camera2D"]
+script = ExtResource("5_uk086")
