@@ -25,6 +25,10 @@ window/vsync/vsync_mode=0
 
 enabled=PackedStringArray("res://addons/phantom_camera/plugin.cfg", "res://addons/rmsmartshape/plugin.cfg")
 
+[filesystem]
+
+import/blender/enabled=false
+
 [input]
 
 jump={
