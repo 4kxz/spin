@@ -1,11 +1,11 @@
-[gd_scene load_steps=126 format=3 uid="uid://bkkciq1kt5aco"]
+[gd_scene load_steps=127 format=3 uid="uid://bkkciq1kt5aco"]
 
 [ext_resource type="Script" path="res://Controller.gd" id="1_1tae5"]
 [ext_resource type="Script" path="res://Ball.gd" id="1_q7fn6"]
 [ext_resource type="Texture2D" uid="uid://bdnbrqjnyi8oh" path="res://icon.svg" id="2_67n3d"]
 [ext_resource type="Shader" path="res://RadialBlur.gdshader" id="2_j3vag"]
+[ext_resource type="Texture2D" uid="uid://wmf1162mnoog" path="res://addons/phantom_camera/icons/PhantomCameraHostIcon.svg" id="2_vl580"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2D.gd" id="3_4le1s"]
-[ext_resource type="Script" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="4_5ypob"]
 [ext_resource type="Script" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="5_uk086"]
 [ext_resource type="Texture2D" uid="uid://dxf3n28pxvq76" path="res://wheel.png" id="5_vpms3"]
 [ext_resource type="Script" path="res://ControlPoint.gd" id="6_3w4r0"]
@@ -56,12 +56,6 @@ damping_max = 2.0
 scale_max = 2.0
 scale_curve = SubResource("CurveTexture_dqq5u")
 alpha_curve = SubResource("CurveTexture_w0c8n")
-
-[sub_resource type="Resource" id="Resource_xhcx7"]
-script = ExtResource("4_5ypob")
-duration = 1.0
-transition = 0
-ease = 2
 
 [sub_resource type="Resource" id="Resource_10p02"]
 script = ExtResource("8_h7fck")
@@ -339,7 +333,7 @@ width = 1.0
 
 [sub_resource type="Resource" id="Resource_vun6l"]
 script = ExtResource("9_aunbv")
-position = Vector2(21499, -666.143)
+position = Vector2(21537.1, -513.924)
 point_in = Vector2(-995.605, 105.595)
 point_out = Vector2(995.605, -105.595)
 properties = SubResource("Resource_iqbwj")
@@ -357,18 +351,18 @@ point_in = Vector2(-739.164, -30.1699)
 point_out = Vector2(739.164, 30.1699)
 properties = SubResource("Resource_o1vi6")
 
-[sub_resource type="Resource" id="Resource_locwf"]
+[sub_resource type="Resource" id="Resource_2kudo"]
 script = ExtResource("8_h7fck")
-texture_idx = 0
+texture_idx = 4
 flip = false
 width = 1.0
 
 [sub_resource type="Resource" id="Resource_5rg7f"]
 script = ExtResource("9_aunbv")
-position = Vector2(26155.9, -879.829)
-point_in = Vector2(-648.652, 362.039)
-point_out = Vector2(648.652, -362.039)
-properties = SubResource("Resource_locwf")
+position = Vector2(26482.6, -779.892)
+point_in = Vector2(-756.285, 164.708)
+point_out = Vector2(792.166, -146.769)
+properties = SubResource("Resource_2kudo")
 
 [sub_resource type="Resource" id="Resource_s6rkq"]
 script = ExtResource("8_h7fck")
@@ -378,7 +372,7 @@ width = 1.0
 
 [sub_resource type="Resource" id="Resource_gybgw"]
 script = ExtResource("9_aunbv")
-position = Vector2(26779.2, 3557.45)
+position = Vector2(31787.4, 3798.81)
 point_in = Vector2(0, 0)
 point_out = Vector2(0, 0)
 properties = SubResource("Resource_s6rkq")
@@ -404,7 +398,7 @@ width = 1.0
 
 [sub_resource type="Resource" id="Resource_3ckei"]
 script = ExtResource("9_aunbv")
-position = Vector2(26847.8, -1364.72)
+position = Vector2(29093.9, -1688.23)
 point_in = Vector2(0, 0)
 point_out = Vector2(0, 0)
 properties = SubResource("Resource_k0262")
@@ -448,6 +442,19 @@ point_in = Vector2(-294.157, -60.3396)
 point_out = Vector2(294.157, 60.3396)
 properties = SubResource("Resource_ivxxy")
 
+[sub_resource type="Resource" id="Resource_t8h45"]
+script = ExtResource("8_h7fck")
+texture_idx = 0
+flip = false
+width = 1.0
+
+[sub_resource type="Resource" id="Resource_76r0c"]
+script = ExtResource("9_aunbv")
+position = Vector2(35103.7, -5202.33)
+point_in = Vector2(-467.629, 1086.12)
+point_out = Vector2(1689.51, 1463.24)
+properties = SubResource("Resource_t8h45")
+
 [sub_resource type="Resource" id="Resource_pu3mi"]
 script = ExtResource("10_s8fic")
 _points = {
@@ -465,13 +472,14 @@ _points = {
 29: SubResource("Resource_3ckei"),
 35: SubResource("Resource_aro4r"),
 36: SubResource("Resource_a2aor"),
-38: SubResource("Resource_1ul4x")
+38: SubResource("Resource_1ul4x"),
+42: SubResource("Resource_76r0c")
 }
-_point_order = Array[int]([9, 17, 19, 20, 28, 23, 24, 25, 26, 29, 27, 35, 36, 38, 0])
+_point_order = Array[int]([9, 17, 19, 20, 28, 23, 24, 25, 26, 29, 42, 27, 35, 36, 38, 0])
 _constraints = {
 Array[int]([9, 0]): 15
 }
-_next_key = 41
+_next_key = 46
 _material_overrides = {}
 
 [sub_resource type="Resource" id="Resource_vesph"]
@@ -755,20 +763,23 @@ default_font = ExtResource("18_frydj")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_speed = 10.0
-editor_draw_limits = true
 
 [node name="PhantomCameraHost" type="Node" parent="Camera2D"]
 script = ExtResource("5_uk086")
+
+[node name="PhantomCameraHostIcon" type="Sprite2D" parent="Camera2D"]
+texture = ExtResource("2_vl580")
 
 [node name="ControlPoint" type="Marker2D" parent="Camera2D"]
 script = ExtResource("6_3w4r0")
 
 [node name="Center" type="Line2D" parent="Camera2D/ControlPoint"]
 points = PackedVector2Array(-5, 0, 5, 0)
-default_color = Color(0, 1, 0, 1)
+default_color = Color(1, 0, 0, 1)
 
 [node name="Line" type="Line2D" parent="Camera2D/ControlPoint"]
 points = PackedVector2Array(1.45519e-11, 1.45519e-11, 50, 1.45519e-11)
+width = 5.0
 default_color = Color(1, 0, 0, 1)
 
 [node name="Player" type="Node2D" parent="."]
@@ -802,7 +813,7 @@ update_scale = false
 script = ExtResource("1_1tae5")
 
 [node name="CameraScale" type="Node2D" parent="Player/Controller"]
-scale = Vector2(0.8, 0.4)
+scale = Vector2(1, 0.5)
 
 [node name="CameraTarget" type="Marker2D" parent="Player/Controller/CameraScale"]
 
@@ -838,8 +849,8 @@ limit/right = 10000000
 limit/bottom = 10000000
 limit/limit_node_target = NodePath("")
 limit/smoothed = false
-tween_parameters = SubResource("Resource_xhcx7")
-tween_on_load = true
+tween_parameters = null
+tween_on_load = false
 inactive_update_mode = 0
 
 [node name="StaticBody2D4" type="StaticBody2D" parent="."]
@@ -870,7 +881,7 @@ collision_polygon_node_path = NodePath("../CollisionPolygon2D")
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
 visible = false
 modulate = Color(1, 1, 1, 0.3)
-polygon = PackedVector2Array(11735.8, 2112.09, 13104.6, 1412.3, 13110.3, 1425.9, 13118.4, 1440.79, 13130.5, 1459.41, 13147.2, 1480.48, 13168.9, 1502.73, 13196.2, 1524.85, 13229.6, 1545.59, 13269.5, 1563.64, 13316.5, 1577.73, 13371, 1586.58, 13433.5, 1588.91, 13504.6, 1583.42, 13584.7, 1568.85, 13674.3, 1543.91, 13773.9, 1507.31, 16720.6, 314.374, 16800.3, 283.897, 16869.3, 249.721, 16928.2, 212.626, 16978, 173.396, 17019.2, 132.812, 17052.8, 91.6547, 17079.5, 50.7067, 17100.1, 10.7499, 17115.3, -27.4346, 17126, -63.0636, 17132.9, -95.3568, 17136.8, -123.531, 17138.7, -164.399, 17137.9, -179.574, 17703.8, -19.8378, 18282.1, 73.7969, 18607.5, 93.2083, 18942.7, 82.5893, 19269.4, 32.8721, 19580.7, -51.6955, 20805.8, -515.321, 21140.1, -606.779, 21499, -666.144, 21854.1, -687.743, 22177.2, -678.734, 22754, -601.215, 23282.6, -498.24, 23816.6, -434.464, 24402.7, -440.412, 25020.2, -510.069, 25620.7, -653.264, 25899.5, -755.51, 26155.9, -879.829, 26537.7, -1108.33, 26745.1, -1258.04, 26799.9, -1306.76, 26830.9, -1339.87, 26839.5, -1351, 26844.7, -1358.73, 26847.2, -1363.25, 26847.9, -1365.11, 26779.3, 3557.55, 6221.13, 3379.77, 6306.25, 1583.95, 6309.15, 1591.91, 6319.16, 1612.39, 6338.53, 1642.41, 6352.42, 1659.95, 6369.48, 1678.62, 6389.98, 1698, 6414.21, 1717.66, 6442.44, 1737.19, 6474.95, 1756.17, 6512.01, 1774.18, 6553.9, 1790.79, 6653.26, 1818.16, 9017.16, 2110.01, 10659.4, 2212.19, 11309.2, 2195.54, 11555.5, 2163.18, 11654.6, 2140.1)
+polygon = PackedVector2Array(11735.8, 2112.09, 13104.6, 1412.3, 13110.3, 1425.9, 13118.4, 1440.79, 13130.5, 1459.41, 13147.2, 1480.48, 13168.9, 1502.73, 13196.2, 1524.85, 13229.6, 1545.59, 13269.5, 1563.64, 13316.5, 1577.73, 13371, 1586.58, 13433.5, 1588.91, 13504.6, 1583.42, 13584.7, 1568.85, 13674.3, 1543.91, 13773.9, 1507.31, 16720.6, 314.374, 16800.3, 283.897, 16869.3, 249.721, 16928.2, 212.626, 16978, 173.396, 17019.2, 132.812, 17052.8, 91.6547, 17079.5, 50.7067, 17100.1, 10.7499, 17115.3, -27.4346, 17126, -63.0636, 17132.9, -95.3568, 17136.8, -123.531, 17138.7, -164.399, 17137.9, -179.574, 17703.8, -19.8378, 18282.1, 73.7969, 18607.5, 93.2083, 18942.7, 82.5898, 19271, 39.4131, 19586.7, -27.911, 20837.9, -386.886, 21176.5, -461.101, 21537.1, -513.925, 22209.3, -550.3, 22773, -525.106, 23816.6, -434.464, 24438.6, -452.547, 25143.2, -534.099, 26482.6, -779.893, 27224.8, -983.738, 29093.9, -1688.23, 31923.4, -3037.98, 33967.4, -4195.05, 34711.2, -4739.5, 34847.1, -4864.58, 34959.1, -4983.88, 35045.3, -5096.69, 35078.1, -5150.45, 35103.6, -5202.53, 35178, -5129.34, 35242.8, -5047.77, 35298.3, -4957.92, 35344.8, -4860.11, 35382.6, -4754.64, 35411.9, -4641.84, 35433.1, -4522, 35446.2, -4395.45, 35449.9, -4123.44, 35425, -3828.3, 35298.3, -3178.59, 34796.8, -1711.29, 34079.1, -153.043, 31787.4, 3798.87, 6221.13, 3379.77, 6306.25, 1583.95, 6309.15, 1591.91, 6319.16, 1612.39, 6338.53, 1642.41, 6352.42, 1659.95, 6369.48, 1678.62, 6389.98, 1698, 6414.21, 1717.66, 6442.44, 1737.19, 6474.95, 1756.17, 6512.01, 1774.18, 6553.9, 1790.79, 6653.26, 1818.16, 9017.16, 2110.01, 10659.4, 2212.19, 11309.2, 2195.54, 11555.5, 2163.18, 11654.6, 2140.1)
 
 [node name="StaticBody2D2" type="StaticBody2D" parent="."]
 position = Vector2(-108.222, 890.108)
@@ -924,13 +935,4 @@ offset_bottom = 40.0
 layout_mode = 2
 
 [node name="AngularVelocity" type="Label" parent="CanvasLayer/BallMetrics/Container"]
-layout_mode = 2
-
-[node name="Gear" type="Label" parent="CanvasLayer/BallMetrics/Container"]
-layout_mode = 2
-
-[node name="Torque0" type="Label" parent="CanvasLayer/BallMetrics/Container"]
-layout_mode = 2
-
-[node name="Torque1" type="Label" parent="CanvasLayer/BallMetrics/Container"]
 layout_mode = 2

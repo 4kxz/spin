@@ -1,6 +1,6 @@
 class_name ControlPoint extends Marker2D
 
-@export var sensitivity := 3.0
+@export var sensitivity := 4.0
 @export var max_distance := 25
 
 var angle := 0.0
