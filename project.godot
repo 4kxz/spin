@@ -47,6 +47,11 @@ gear_down={
 ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="Physics"
+2d_physics/layer_2="Collectables"
+
 [physics]
 
 2d/run_on_separate_thread=true

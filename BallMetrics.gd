@@ -2,18 +2,20 @@ extends Control
 
 @export var ball: BallBody
 
-var torque_labels := []
+var torque_labels: Array[Label]
 
-@onready var linear_velocity: Label = $Container/LinearVelocity
-@onready var angular_velocity: Label = $Container/AngularVelocity
-@onready var gear: Label = $Container/Gear
+@onready var container = %Container
+@onready var linear_velocity: Label = %LinearVelocity
+@onready var angular_velocity: Label = %AngularVelocity
+@onready var air_time: Label = %AirTime
 
 
 func _ready() -> void:
-	for i in ball.gear_torque.size():
+	torque_labels = []
+	for i in ball.GEARS.size():
 		var label := Label.new()
 		torque_labels.append(label)
-		$Container.add_child(label)
+		container.add_child(label)
 
 
 func _process(_delta: float) -> void:
@@ -26,6 +28,9 @@ func _process(_delta: float) -> void:
 	var av := roundi(ball.angular_velocity)
 	var av_bars :=  '|'.repeat(abs(av))
 	angular_velocity.set_text("Angular velocity: %4d %s" % [av, av_bars])
+	# Air time
+	air_time.set_text("Air time: %.1f" % ball.air_time)
+	air_time.add_theme_color_override("font_color", Color.RED if ball.air_time > 0.2 else Color.WHITE)
 	# Gears
 	for i in ball.gear_torque.size():
 		var t := roundi(ball.gear_torque[i])

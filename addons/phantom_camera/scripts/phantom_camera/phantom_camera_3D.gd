@@ -39,6 +39,8 @@ signal became_inactive
 
 ## Emitted when the Camera3D starts to tween to the PhantomCamera3D.
 signal tween_started
+## Emitted when the Camera3D is to tweening to the PhantomCamera3D.
+signal is_tweening
 ## Emitted when the tween is interrupted due to another PhantomCamera3D becoming active.
 ## The argument is the PhantomCamera3D that interrupted the tween.
 signal tween_interrupted(pcam_3d: PhantomCamera3D)
@@ -181,9 +183,8 @@ func _get_property_list() -> Array:
 				"usage": PROPERTY_USAGE_DEFAULT,
 			})
 
-	if Properties.follow_has_target || Properties.has_follow_group:
-		property_list.append_array(Properties.add_follow_properties())
-		property_list.append_array(Properties.add_follow_framed())
+	property_list.append_array(Properties.add_follow_properties())
+	property_list.append_array(Properties.add_follow_framed())
 
 	property_list.append({
 		"name": LOOK_AT_MODE_PROPERTY_NAME,
@@ -392,9 +393,10 @@ func _property_can_revert(property: StringName) -> bool:
 		Constants.PRIORITY_OVERRIDE: 									return true
 		Constants.PRIORITY_PROPERTY_NAME: 								return true
 		
-		FOLLOW_DISTANCE_PROPERTY_NAME:				 					return true
+		Constants.FOLLOW_TARGET_PROPERTY_NAME:							return true
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return true
 		
+		FOLLOW_DISTANCE_PROPERTY_NAME:				 					return true
 		FOLLOW_GROUP_DISTANCE_AUTO_NAME:								return true
 		FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:							return true
 		FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:							return true
@@ -425,14 +427,15 @@ func _property_can_revert(property: StringName) -> bool:
 
 #region _property_get_revert
 
-func _property_get_revert(property: StringName):
+func _property_get_revert(property: StringName) -> Variant:
 	match property:
 		Constants.PRIORITY_OVERRIDE: 									return false
 		Constants.PRIORITY_PROPERTY_NAME: 								return 0
 		
-		FOLLOW_DISTANCE_PROPERTY_NAME:				 					return 1
+		Constants.FOLLOW_TARGET_PROPERTY_NAME:							return NodePath()
 		Constants.FOLLOW_TARGET_OFFSET_PROPERTY_NAME: 					return Vector3.ZERO
 		
+		FOLLOW_DISTANCE_PROPERTY_NAME:				 					return 1
 		FOLLOW_GROUP_DISTANCE_AUTO_NAME:								return false
 		FOLLOW_GROUP_DISTANCE_AUTO_MIN_NAME:							return 1
 		FOLLOW_GROUP_DISTANCE_AUTO_MAX_NAME:							return 5
@@ -454,7 +457,8 @@ func _property_get_revert(property: StringName):
 		Constants.TWEEN_ONLOAD_NAME: 									return true
 		
 		CAMERA_3D_RESOURCE_PROPERTY_NAME: 								return null
-
+	
+	return null
 #endregion
 
 
@@ -647,15 +651,16 @@ func _process(delta: float) -> void:
 							if is_instance_valid(_follow_spring_arm_node):
 								if not get_parent() == _follow_spring_arm_node:
 									var follow_target: Node3D = Properties.follow_target_node
-#									_follow_spring_arm_node.set_script(load("res://addons/phantom_camera/scripts/phantom_camera/third_person/third_person_mouse_follow.gd"))
-									_follow_spring_arm_node.set_rotation_degrees(rotation_degrees)
+									_follow_spring_arm_node.set_rotation_degrees(get_rotation_degrees())
 									_follow_spring_arm_node.set_length(follow_distance)
 									_follow_spring_arm_node.set_collision_mask(_follow_spring_arm_collision_mask)
 									_follow_spring_arm_node.set_shape(_follow_spring_arm_shape)
 									_follow_spring_arm_node.set_margin(_follow_spring_arm_margin)
+									_follow_spring_arm_node.set_global_position(_get_target_position_offset()) # Ensure the PCam3D starts at the right position at runtime
 
 									if not is_tween_on_load():
-										Properties.has_tweened_onload = false
+										Properties.has_tweened = true
+
 									reparent(_follow_spring_arm_node)
 
 								_interpolate_position(

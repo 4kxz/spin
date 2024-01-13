@@ -8,7 +8,7 @@ const GEARS = [
 ]
 
 @export var control_point: ControlPoint
-@export var jump_impulse := 500
+@export var jump_impulse := 1200
 @export var dust_particles: GPUParticles2D
 @export var dust_frequency := 24
 @export var dust_speed := 5
@@ -23,16 +23,22 @@ const GEARS = [
 @export var gear_delay_period := 0.35
 @export var gear_cooldown_period := 2.4
 @export var gear_shift_slack := 1.2
+@export var booster_air_gain := 0.01
 
-var current_gear := 0
-var gear_cooldown_timer := 0.0
+var booster: float = 0:
+	set(value):
+		booster = minf(value, 1.0)
+var current_gear: int = 0
+var gear_cooldown_timer: float = 0
 var gear_torque: Array[float]
-var previous_angle := 0.0
+var previous_angle: float = 0
 var previous_velocity := Vector2.ZERO
-var dust_particle_timer := 0.0
-var is_grounded := false
+var dust_particle_timer: float = 0
+var air_time: float = 0
 
 @onready var dust_period = 1.0 / dust_frequency
+@onready var clash: AudioStreamPlayer2D = $Clash
+@onready var jump: AudioStreamPlayer2D = $Jump
 
 
 func _ready() -> void:
@@ -48,6 +54,7 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	air_time += delta
 	# Gear cooldown
 	gear_cooldown_timer += delta
 	# Dust particles
@@ -58,6 +65,12 @@ func _physics_process(delta: float) -> void:
 
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	var has_contact := state.get_contact_count() > 0
+	if has_contact and position.y < state.get_contact_collider_position(0).y:
+		if air_time > 1.0 and previous_velocity.length() > 100:
+			clash.play()
+		air_time = 0
+	var is_grounded = air_time < 0.2
 	# Angular delta
 	var speed := linear_velocity.length()
 	for i in GEARS.size():
@@ -76,11 +89,10 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 				get_tree().create_timer(gear_delay_period).timeout.connect(_set_gear.bind(i))
 				gear_cooldown_timer = 0
 	# Apply forces
-	is_grounded = state.get_contact_count() > 0
 	var torque_multiplier := 0.9 if is_grounded else 0.5
 	state.apply_torque_impulse(gear_torque[current_gear] * angle_delta * torque_multiplier)
 	# Dust particles
-	if is_grounded and previous_velocity.length() >= dust_trigger_speed and dust_particle_timer >= dust_period:
+	if has_contact and previous_velocity.length() >= dust_trigger_speed and dust_particle_timer >= dust_period:
 		var dust_transform = Transform2D(0, state.get_contact_collider_position(0))
 		var dust_velocity = linear_velocity / dust_speed
 		dust_particles.emit_particle(
@@ -92,13 +104,18 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		)
 		dust_particle_timer = 0
 	previous_velocity = linear_velocity
+	# Add booster
+	if not is_grounded:
+		booster += absf(angle_delta * booster_air_gain)
 
 
 func _input(event: InputEvent) -> void:
 	var new_gear := current_gear
-	if event.is_action_pressed("jump"):
-		var jump_direction = position.direction_to(get_global_mouse_position())
-		apply_central_impulse(jump_impulse * jump_direction)
+	if event.is_action_pressed("jump") and booster > 0.25:
+			var jump_direction = position.direction_to(get_global_mouse_position())
+			apply_central_impulse(jump_impulse * jump_direction * booster)
+			booster = 0.0
+			jump.play()
 	elif event.is_action_pressed("gear_up"):
 		new_gear = min(current_gear + 1, 1)
 	elif event.is_action_pressed("gear_down"):

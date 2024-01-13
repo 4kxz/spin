@@ -1,0 +1,46 @@
+[gd_scene load_steps=5 format=3 uid="uid://bmtaqrwpkr8m4"]
+
+[ext_resource type="Texture2D" uid="uid://bdnbrqjnyi8oh" path="res://icon.svg" id="1_20480"]
+[ext_resource type="AudioStream" uid="uid://ckrc77vhlut1w" path="res://sound/coin.mp3" id="2_dt605"]
+
+[sub_resource type="GDScript" id="GDScript_k74i4"]
+script/source = "extends Area2D
+
+var t := 0.0
+@onready var sprite = $Sprite2D
+@onready var audio = $AudioStreamPlayer2D
+
+
+func _physics_process(delta: float) -> void:
+	t += delta
+	sprite.scale.x = sin(t * PI)
+
+
+func _on_body_entered(body: Node2D) -> void:
+	if body is BallBody:
+		body.booster += 0.1
+		hide()
+		audio.play()
+		audio.finished.connect(queue_free)
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_foa1b"]
+radius = 50.0
+
+[node name="Collectable" type="Area2D"]
+collision_layer = 2
+collision_mask = 2
+script = SubResource("GDScript_k74i4")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("1_20480")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_foa1b")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_dt605")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
