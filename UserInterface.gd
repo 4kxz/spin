@@ -5,7 +5,7 @@ extends CanvasLayer
 var time := 0.0
 
 @onready var timer: Label = %Timer
-@onready var booster: ProgressBar = %Booster
+@onready var energy: ProgressBar = %Energy
 
 
 func _process(delta: float):
@@ -13,4 +13,4 @@ func _process(delta: float):
 	var minutes := int(time / 60)
 	var seconds := fposmod(time, 60)
 	timer.text = "%d:%05.2f" % [minutes, seconds]
-	booster.ratio = ball.booster
+	energy.ratio = ball.energy

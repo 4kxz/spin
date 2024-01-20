@@ -58,6 +58,7 @@ gear_down={
 
 2d_physics/layer_1="Physics"
 2d_physics/layer_2="Collectables"
+2d_physics/layer_3="Hook"
 
 [physics]
 

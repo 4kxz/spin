@@ -23,11 +23,14 @@ const GEARS = [
 @export var gear_delay_period := 0.35
 @export var gear_cooldown_period := 2.4
 @export var gear_shift_slack := 1.2
-@export var booster_air_gain := 0.008
+@export var energy_air_gain := 0.008
+@export var chain: Chain
+@export var chain_strength := 2000.0
+@export var chain_energy_drain := 0.1
 
-var booster: float = 0:
+var energy: float = 0:
 	set(value):
-		booster = minf(value, 1.0)
+		energy = clampf(value, 0, 1)
 var current_gear: int = 0
 var gear_cooldown_timer: float = 0
 var gear_torque: Array[float]
@@ -37,9 +40,10 @@ var dust_particle_timer: float = 0
 var air_time: float = 0
 var is_grounded: bool = true
 
+@onready var clash_audio: AudioStreamPlayer2D = $Clash
+@onready var jump_audio: AudioStreamPlayer2D = $Jump
+@onready var chain_audio: AudioStreamPlayer2D = $Chain
 @onready var dust_period = 1.0 / dust_frequency
-@onready var clash: AudioStreamPlayer2D = $Clash
-@onready var jump: AudioStreamPlayer2D = $Jump
 
 
 func _ready() -> void:
@@ -52,6 +56,11 @@ func _process(delta: float) -> void:
 	var zoom := sqrt(1.0 / (1.0 + linear_velocity.length() / 1000.0))
 	camera.set_zoom(lerp(camera.zoom, Vector2(zoom, zoom), delta))
 	camera_target.position = lerp(camera_target.position, linear_velocity * 0.6, camera_speed * delta)
+	# Chain
+	if chain.is_flying() or chain.is_hooked():
+		energy -= chain_energy_drain * delta
+		if is_zero_approx(energy) or not Input.is_action_pressed("special"):
+			chain.release()
 
 
 func _physics_process(delta: float) -> void:
@@ -69,7 +78,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	var has_contact := state.get_contact_count() > 0
 	if has_contact and position.y < state.get_contact_collider_position(0).y:
 		if air_time > 1.0 and previous_velocity.length() > 100:
-			clash.play()
+			clash_audio.play()
 		air_time = 0
 	is_grounded = air_time < 0.2
 	# Angular delta
@@ -89,6 +98,12 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 			if gear_torque[i] > gear_torque[current_gear] * gear_shift_slack:
 				get_tree().create_timer(gear_delay_period).timeout.connect(_set_gear.bind(i))
 				gear_cooldown_timer = 0
+	# Chain
+	if chain.is_hooked():
+		var chain_velocity = chain.tip.global_position - global_position
+		if chain_velocity.y > 0:
+			chain_velocity *= 0.5
+		state.apply_central_force(chain_velocity.normalized() * chain_strength)
 	# Apply forces
 	var torque_multiplier := 0.9 if is_grounded else 0.5
 	state.apply_torque_impulse(gear_torque[current_gear] * angle_delta * torque_multiplier)
@@ -105,21 +120,19 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		)
 		dust_particle_timer = 0
 	previous_velocity = linear_velocity
-	# Add booster
+	# Add energy
 	if not is_grounded:
-		booster += absf(angle_delta * booster_air_gain)
+		energy += absf(angle_delta * energy_air_gain)
 
 
 func _input(event: InputEvent) -> void:
 	var new_gear := current_gear
 	if event.is_action_pressed("jump") and is_grounded:
 		apply_central_impulse(Vector2.UP * jump_impulse)
-		jump.play()
-	elif event.is_action_pressed("special") and booster > 0.5:
-		var jump_direction = position.direction_to(get_global_mouse_position())
-		apply_central_impulse(jump_direction * jump_impulse * (1.0 + booster))
-		booster = 0.0
-		jump.play()
+		jump_audio.play()
+	elif event.is_action_pressed("special") and energy > 0:
+		chain.shoot(position.direction_to(get_global_mouse_position()))
+		chain_audio.play()
 	elif event.is_action_pressed("gear_up"):
 		new_gear = min(current_gear + 1, 1)
 	elif event.is_action_pressed("gear_down"):
