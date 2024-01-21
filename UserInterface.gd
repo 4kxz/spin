@@ -13,4 +13,4 @@ func _process(delta: float):
 	var minutes := int(time / 60)
 	var seconds := fposmod(time, 60)
 	timer.text = "%d:%05.2f" % [minutes, seconds]
-	energy.ratio = ball.energy
+	energy.ratio = ball.energy	
