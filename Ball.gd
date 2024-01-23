@@ -19,6 +19,7 @@ const GEARS = [
 @export var camera: PhantomCamera2D
 @export var camera_target: Marker2D
 @export var camera_speed := 1.5
+@export var camera_distance := 500
 @export var gear_auto_shift := true
 @export var gear_delay_period := 0.35
 @export var gear_cooldown_period := 2.4
@@ -55,7 +56,9 @@ func _process(delta: float) -> void:
 	# Camera
 	var zoom := sqrt(1.0 / (1.0 + linear_velocity.length() / 1000.0))
 	camera.set_zoom(lerp(camera.zoom, Vector2(zoom, zoom), delta))
-	camera_target.position = lerp(camera_target.position, linear_velocity * 0.6, camera_speed * delta)
+	var x := minf(linear_velocity.length() / camera_distance, 1)
+	var camera_offset := (1/(1+(x/(1-x))**-2)) * camera_distance * linear_velocity.normalized()
+	camera_target.position = lerp(camera_target.position, camera_offset, camera_speed * delta)
 	# Chain
 	if chain.is_flying() or chain.is_hooked():
 		energy -= chain_energy_drain * delta
@@ -100,7 +103,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 				gear_cooldown_timer = 0
 	# Chain
 	if chain.is_hooked():
-		var chain_velocity = chain.tip.global_position - global_position
+		var chain_velocity = chain.hook.global_position - global_position
 		if chain_velocity.y > 0:
 			chain_velocity *= 0.5
 		state.apply_central_force(chain_velocity.normalized() * chain_strength)

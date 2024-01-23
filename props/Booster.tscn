@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://c2pttv5e0cbgc"]
 
-[ext_resource type="Script" path="res://Booster.gd" id="1_3yxdm"]
-[ext_resource type="Texture2D" uid="uid://bdnbrqjnyi8oh" path="res://icon.svg" id="2_uyy2i"]
+[ext_resource type="Script" path="res://props/Booster.gd" id="1_3yxdm"]
+[ext_resource type="Texture2D" uid="uid://bdnbrqjnyi8oh" path="res://graphics/icon.svg" id="2_uyy2i"]
 [ext_resource type="AudioStream" uid="uid://cdcsife6fbw47" path="res://sound/woosh.mp3" id="3_w5dee"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_d32ye"]

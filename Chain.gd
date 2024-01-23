@@ -1,6 +1,6 @@
 class_name Chain extends Node2D
 
-@export var tip: CharacterBody2D
+@export var hook: CharacterBody2D
 @export var speed: float = 50
 
 var _direction: Vector2
@@ -14,7 +14,7 @@ func shoot(direction: Vector2) -> void:
 	_direction = direction.normalized()
 	_hooked = false
 	_flying = true
-	tip.global_position = global_position
+	hook.global_position = global_position
 
 
 func release() -> void:
@@ -32,17 +32,18 @@ func is_flying() -> bool:
 
 func _process(_delta: float) -> void:
 	visible = _flying or _hooked
+	hook.visible = visible
 	if not visible:
 		return
-	links.global_position = tip.global_position
-	links.rotation = global_position.angle_to_point(tip.global_position) + PI / 2
-	links.region_rect.size.y = global_position.distance_to(tip.global_position)
-	tip.rotation = links.rotation
+	links.global_position = hook.global_position
+	links.rotation = global_position.angle_to_point(hook.global_position) + PI / 2
+	links.region_rect.size.y = global_position.distance_to(hook.global_position)
+	hook.rotation = links.rotation
 
 
 func _physics_process(_delta: float) -> void:
 	if _flying:
-		var collision = tip.move_and_collide(_direction * speed)
+		var collision = hook.move_and_collide(_direction * speed)
 		if collision:
 			_hooked = true
 			_flying = false
